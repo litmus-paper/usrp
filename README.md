@@ -26,37 +26,39 @@ struct _chan_usrp_bufhdr {
 };
 ```
 
-## Key Points:
+### Key Points:
 
-    Verification String (eye):
-    Must be "USRP" to ensure the packet is valid.
+- **Verification String (eye):** Must be "USRP" to ensure the packet is valid.
+- **Sequence Number (seq):** Increments with each packet to help detect packet loss.
+- **Memory (memory):** A memory identifier (or zero if unused).
+- **Push-to-Talk State (keyup):** Indicates whether the transmitter is active.
+- **Talkgroup (talkgroup):** Identifies the talk group, useful in trunked radio systems.
+- **Payload Type (type):**
 
-    Sequence Number (seq):
-    Increments with each packet to help detect packet loss.
+  - **0** (Voice): The payload contains voice data.\
+    The voice payload is 160 samples of 16-bit linear PCM, equaling 320 bytes per packet. At an 8 kHz sampling rate, this represents approximately 20 milliseconds of audio.<br/>
+  - **1** (DTMF): The payload contains DTMF tone information.<br/>
+  - **2** (Text): The payload contains text data.
 
-    Memory (memory):
-    A memory identifier (or zero if unused).
+- Multiplexer ID (mpxid) & Reserved (reserved): These fields are reserved for future use.
 
-    Push-to-Talk State (keyup):
-    Indicates whether the transmitter is active.
+### USRP Payload Details
 
-    Talkgroup (talkgroup):
-    Identifies the talk group, useful in trunked radio systems.
+For **voice packets** (payload type 0), the payload contains raw, uncompressed audio data:
 
-    Payload Type (type):
-        0 (Voice): The payload contains voice data.
-        The voice payload is 160 samples of 16-bit linear PCM, equaling 320 bytes per packet. At an 8 kHz sampling rate, this represents approximately 20 milliseconds of audio.
-        1 (DTMF): The payload contains DTMF tone information.
-        2 (Text): The payload contains text data.
+- **Data Size:** 320 bytes per packet, corresponding to 160 audio samples.
+- **Sample Format:** Each sample is a 16-bit signed integer (linear PCM).
+- **Duration:** At an 8 kHz sampling rate, these 160 samples represent approximately 20 milliseconds of audio.
+- **Byte Order:** Samples are transmitted in network byte order (big-endian). Conversions might be necessary if your audio system expects little-endian format.
+- **Usage:** The payload is a contiguous block of PCM audio with no additional framing or compression. It can be directly streamed to audio playback hardware using libraries that support raw PCM input (such as Oto or PortAudio).
 
-    Multiplexer ID (mpxid) & Reserved (reserved):
-    These fields are reserved for future use.
+For **non-voice packets** (e.g., DTMF [type 1] and text [type 2]), the payload follows the header but contains either tone information or textual data, respectively. These are not processed for audio playback in this application.
 
 ## Requirements
 
-    Go (version 1.XX or later recommended)
-    Oto – a pure Go audio library
-    A network connection for receiving UDP packets following the USRP protocol
+- Go (version 1.XX or later recommended)
+- Oto – a pure Go audio library
+- A network connection for receiving UDP packets following the USRP protocol
 
 ## Building
 
@@ -65,25 +67,29 @@ struct _chan_usrp_bufhdr {
 
 2.  Download the Oto Package:
     Open your terminal (Command Prompt or PowerShell on Windows) and run:
-
-go get github.com/hajimehoshi/oto
+    `go get github.com/hajimehoshi/oto`
 
 3.  Build the Application:
     Save the source code as usrp_player_oto.go (see project source for details) and build it:
+    On Windows:
 
-        On Windows:
-
+```
 go build -o usrp_player_oto.exe usrp_player_oto.go
+```
 
 On Linux/macOS:
 
-        go build -o usrp_player_oto usrp_player_oto.go
+```
+go build -o usrp_player_oto usrp_player_oto.go
+```
 
 ## Usage
 
 Run the compiled executable with the -port flag to specify the UDP port. For example, to listen on UDP port 1234:
 
+```
 ./usrp_player_oto -port=1234
+```
 
 The program will start listening for USRP UDP packets. When a valid voice packet is received, it extracts the 320-byte payload (160 16-bit samples) and streams the audio to your PC speakers.
 Windows Setup
@@ -101,7 +107,3 @@ Enjoy streaming your USRP voice data directly to your speakers!
 ---
 
 This `README.md` provides an overview of the project, details about the USRP protocol, requirements, building instructions, and usage details. You can modify and expand it as needed for your specific project.
-
-```
-
-```
