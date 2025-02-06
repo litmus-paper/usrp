@@ -24,6 +24,7 @@ struct _chan_usrp_bufhdr {
     uint32_t mpxid;     // Multiplexer ID (reserved for future use)
     uint32_t reserved;  // Reserved for future use
 };
+```
 
 ## Key Points:
 
@@ -58,6 +59,7 @@ struct _chan_usrp_bufhdr {
     A network connection for receiving UDP packets following the USRP protocol
 
 ## Building
+
 1.  Install Go:
     Download and install Go from golang.org/dl.
 
@@ -67,9 +69,9 @@ struct _chan_usrp_bufhdr {
 go get github.com/hajimehoshi/oto
 
 3.  Build the Application:
-Save the source code as usrp_player_oto.go (see project source for details) and build it:
+    Save the source code as usrp_player_oto.go (see project source for details) and build it:
 
-    On Windows:
+        On Windows:
 
 go build -o usrp_player_oto.exe usrp_player_oto.go
 
@@ -96,9 +98,10 @@ Contributions, issues, and feature requests are welcome. Feel free to fork the r
 
 Enjoy streaming your USRP voice data directly to your speakers!
 
-
 ---
 
 This `README.md` provides an overview of the project, details about the USRP protocol, requirements, building instructions, and usage details. You can modify and expand it as needed for your specific project.
+
+```
 
 ```
